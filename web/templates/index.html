@@ -1,0 +1,64 @@
+<html>
+<head>
+    <title>Router Management</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+    <h1>You are calling me from {{ request.remote_addr }}</h1>
+
+    <h2>Add Router</h2>
+
+    <form method="POST" action="{{ url_for('add_router') }}">
+        <input
+            name="ip"
+            placeholder="Router IP Address"
+            required
+        />
+
+        <input
+            name="username"
+            placeholder="Username"
+            required
+        />
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+        />
+
+        <button type="submit">Add</button>
+
+    </form>
+
+    <h2>Routers List</h2>
+
+    <ul>
+        {% for router in data %}
+        <li>
+            <a href="/router/{{ router['_id'] }}">
+                        {{ router["ip"] }}
+             </a> - {{ router.username }}
+
+            <form
+                method="POST"
+                action="{{ url_for('delete_router') }}"
+                style="display:inline"
+            >
+                <input
+                    type="hidden"
+                    name="id"
+                    value="{{ router._id }}"
+                />
+
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

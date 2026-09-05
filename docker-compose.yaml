@@ -1,0 +1,75 @@
+services:
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-net
+
+  web:
+    build:
+      context: ./web
+    container_name: web
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - app-net
+
+  scheduler:
+    build:
+      context: ./scheduler
+    container_name: scheduler
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-net
+
+  worker1:
+    build:
+      context: ./worker1
+    container_name: worker1
+    restart: unless-stopped
+
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - rabbitmq
+
+    networks:
+      - app-net
+
+volumes:
+  mongo_data:
+
+
+networks:
+  app-net:
+    driver: bridge

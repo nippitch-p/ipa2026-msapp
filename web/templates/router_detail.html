@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Router Detail</title>
+</head>
+
+<body>
+
+    <h1>Router Detail</h1>
+
+    <p>
+        IP Address:
+        <strong>{{ router["ip"] }}</strong>
+    </p>
+
+    <p>
+        Username:
+        {{ router["username"] }}
+    </p>
+
+
+    {% for result in results %}
+
+        <h3>
+            Timestamp:
+            {{ result["timestamp"] }}
+        </h3>
+
+
+        <table border="1">
+
+            <thead>
+
+                <tr>
+                    <th>Interface</th>
+                    <th>IP Address</th>
+                    <th>OK?</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Protocol</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for interface in result["interfaces"] %}
+
+                <tr>
+
+                    <td>
+                        {{ interface["interface"] }}
+                    </td>
+
+                    <td>
+                        {{ interface["ip_address"] }}
+                    </td>
+
+                    <td>
+                        {{ interface["ok"] }}
+                    </td>
+
+                    <td>
+                        {{ interface["method"] }}
+                    </td>
+
+                    <td>
+                        {{ interface["status"] }}
+                    </td>
+
+                    <td>
+                        {{ interface["protocol"] }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <br>
+
+    {% else %}
+
+        <p>
+            No interface results found.
+        </p>
+
+    {% endfor %}
+
+
+    <a href="/">
+        Back
+    </a>
+
+</body>
+
+</html>

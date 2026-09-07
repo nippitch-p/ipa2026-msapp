@@ -3,101 +3,129 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Router {{ router_ip }}</title>
 
-    <title>Router Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .up {
+            color: green;
+            font-weight: bold;
+        }
+
+        .down {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Router Detail</h1>
+    <a href="{{ url_for('index') }}">
+        ← Back to Router List
+    </a>
 
-    <p>
-        IP Address:
-        <strong>{{ router["ip"] }}</strong>
-    </p>
+    <h1>Router {{ router_ip }}</h1>
 
-    <p>
-        Username:
-        {{ router["username"] }}
-    </p>
+    {% if statuses %}
 
+    <table>
 
-    {% for result in results %}
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Interface</th>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Protocol</th>
+            </tr>
+        </thead>
 
-        <h3>
-            Timestamp:
-            {{ result["timestamp"] }}
-        </h3>
+        <tbody>
 
+            {% for status in statuses %}
 
-        <table border="1">
-
-            <thead>
-
-                <tr>
-                    <th>Interface</th>
-                    <th>IP Address</th>
-                    <th>OK?</th>
-                    <th>Method</th>
-                    <th>Status</th>
-                    <th>Protocol</th>
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                {% for interface in result["interfaces"] %}
+                {% for interface in status.interfaces %}
 
                 <tr>
 
+                    <!-- Timestamp -->
                     <td>
-                        {{ interface["interface"] }}
+                        {{ status.timestamp }}
                     </td>
 
+                    <!-- Interface -->
                     <td>
-                        {{ interface["ip_address"] }}
+                        {{ interface.interface }}
                     </td>
 
+                    <!-- IP Address -->
                     <td>
-                        {{ interface["ok"] }}
+                        {{ interface.ip_address }}
                     </td>
 
+                    <!-- Status -->
                     <td>
-                        {{ interface["method"] }}
+                        {% if interface.status == "up" %}
+                            <span class="up">
+                                {{ interface.status }}
+                            </span>
+                        {% else %}
+                            <span class="down">
+                                {{ interface.status }}
+                            </span>
+                        {% endif %}
                     </td>
 
+                    <!-- Protocol -->
                     <td>
-                        {{ interface["status"] }}
-                    </td>
-
-                    <td>
-                        {{ interface["protocol"] }}
+                        {% if interface.proto == "up" %}
+                            <span class="up">
+                                {{ interface.proto }}
+                            </span>
+                        {% else %}
+                            <span class="down">
+                                {{ interface.proto }}
+                            </span>
+                        {% endif %}
                     </td>
 
                 </tr>
 
                 {% endfor %}
 
-            </tbody>
+            {% endfor %}
 
-        </table>
+        </tbody>
 
-        <br>
+    </table>
 
     {% else %}
 
-        <p>
-            No interface results found.
-        </p>
+        <p>No interface status found for this router.</p>
 
-    {% endfor %}
-
-
-    <a href="/">
-        Back
-    </a>
+    {% endif %}
 
 </body>
 

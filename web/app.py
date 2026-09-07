@@ -14,7 +14,7 @@ MONGO_URI = os.environ.get(
 
 DB_NAME = os.environ.get(
     "DB_NAME",
-    "ipa2026"
+    "ipa2026_db"
 )
 
 client = MongoClient(MONGO_URI)
@@ -22,8 +22,7 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
 routers = db["routers"]
-router_results = db["router_results"]
-
+interface_status_collection = db["interface_status"]
 
 @app.route("/")
 def index():
@@ -67,33 +66,37 @@ def delete_router():
 
     return redirect(url_for("index"))
 
-
-
 @app.route("/router/<router_id>")
 def router_detail(router_id):
 
-    router = routers.find_one({
-        "_id": ObjectId(router_id)
-    })
-
-    if not router:
-        return "Router not found", 404
-
-
-    results = list(
-        router_results.find({
-            "router_ip": router["ip"]
+    try:
+        router = routers.find_one({
+            "_id": ObjectId(router_id)
         })
-        .sort("timestamp", -1)
-        .limit(3)
-    )
 
+        if not router:
+            return "Router not found", 404
 
-    return render_template(
-        "router_detail.html",
-        router=router,
-        results=results
-    )
+        router_ip = router["ip"]
+
+        # ดึงข้อมูล 3 ครั้งล่าสุดของ Router นี้
+        statuses = list(
+            interface_status_collection.find({
+                "router_ip": router_ip
+            })
+            .sort("timestamp", -1)
+            .limit(3)
+        )
+
+        return render_template(
+            "router_detail.html",
+            router_ip=router_ip,
+            statuses=statuses
+        )
+
+    except Exception as e:
+        print("ERROR:", e)
+        return f"Error: {e}", 500
 
 if __name__ == "__main__":
 

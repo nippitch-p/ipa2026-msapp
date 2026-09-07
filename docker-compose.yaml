@@ -6,6 +6,11 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
     networks:
@@ -18,6 +23,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    env_file:
+      - .env
     networks:
       - app-net
 
@@ -51,10 +58,10 @@ services:
     networks:
       - app-net
 
-  worker1:
+  worker:
     build:
-      context: ./worker1
-    container_name: worker1
+      context: ./worker
+    container_name: worker
     restart: unless-stopped
 
     env_file:

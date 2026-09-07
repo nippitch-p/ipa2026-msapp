@@ -42,11 +42,11 @@ jobs:
 
     - name: Build & Push Docker Images
       run: |
-        docker build -t ubuntu/worker:latest ./worker
-        docker build -t ubuntu/scheduler:latest ./scheduler
-        docker build -t ubuntu/web:latest ./web
+        docker build -t pchxnph/worker:latest ./worker
+        docker build -t pchxnph/scheduler:latest ./scheduler
+        docker build -t pchxnph/web:latest ./web
 
-        docker push ubuntu/worker:latest
-        docker push ubuntu/scheduler:latest
-        docker push ubuntu/web:latest
+        docker push pchxnph/worker:latest
+        docker push pchxnph/scheduler:latest
+        docker push pchxnph/web:latest
 

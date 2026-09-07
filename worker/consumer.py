@@ -22,11 +22,7 @@ def consume():
             creds = pika.PlainCredentials(user, pwd)
 
             conn = pika.BlockingConnection(
-                pika.ConnectionParameters(
-                    host=host,
-                    port=port,
-                    credentials=creds
-                )
+                pika.ConnectionParameters(host=host, port=port, credentials=creds)
             )
 
             print("Connected to RabbitMQ")
@@ -42,23 +38,16 @@ def consume():
 
     ch = conn.channel()
 
-    ch.queue_declare(
-        queue=queue,
-        durable=True
-    )
+    ch.queue_declare(queue=queue, durable=True)
 
     ch.basic_qos(prefetch_count=1)
 
-    ch.basic_consume(
-        queue=queue,
-        on_message_callback=callback,
-        auto_ack=False
-    )
+    ch.basic_consume(queue=queue, on_message_callback=callback, auto_ack=False)
 
     print(f"Waiting for messages on {queue}...")
 
     ch.start_consuming()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     consume()

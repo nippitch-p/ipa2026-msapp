@@ -16,34 +16,19 @@ def callback(ch, method, properties, body):
 
     try:
 
-        interfaces = get_interfaces(
-            router_ip,
-            router_username,
-            router_password
-        )
+        interfaces = get_interfaces(router_ip, router_username, router_password)
 
         print("Interfaces:")
         print(interfaces)
 
-        save_interface_status(
-            router_ip,
-            interfaces
-        )
+        save_interface_status(router_ip, interfaces)
 
-        print(
-            f"Saved interface status "
-            f"for {router_ip}"
-        )
+        print(f"Saved interface status " f"for {router_ip}")
 
-        ch.basic_ack(
-            delivery_tag=method.delivery_tag
-        )
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
     except Exception as e:
 
         print(f"Error: {e}")
 
-        ch.basic_nack(
-            delivery_tag=method.delivery_tag,
-            requeue=True
-        )
+        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)

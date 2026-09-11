@@ -25,18 +25,32 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create .env
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          MONGO_ROOT_USER: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_ROOT_PASS: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          RABBITMQ_USER: ${{ secrets.RABBITMQ_DEFAULT_USER }}
+          RABBITMQ_PASS: ${{ secrets.RABBITMQ_DEFAULT_PASS }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_QUEUE: ${{ secrets.RABBITMQ_QUEUE }}
         run: |
-          {
-            #echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}"
-            echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}"
-            echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}"
-            echo "RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}"
-            echo "RABBITMQ_DEFAULT_PASS=${{ secrets.RABBITMQ_DEFAULT_PASS }}"
-          } > .env
+          cat <<EOF > .env
+          DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
+          MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+          MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS}
+          MONGO_URI=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongo:27017/?authSource=admin
+          DB_NAME=${DB_NAME}
+          RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+          RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+          RABBITMQ_HOST=${RABBITMQ_HOST}
+          RABBITMQ_PORT=${RABBITMQ_PORT}
+          RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+          EOF
           chmod 600 .env
 
       - name: Up (pull from Hub, no build on prod)
         run: |
           docker compose -f docker-compose.yaml -f docker-compose.prod.yml up -d --pull always --no-build
           docker compose ps
-

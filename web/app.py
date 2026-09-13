@@ -69,7 +69,7 @@ def router_detail(router_id):
         statuses = list(
             interface_status_collection.find({"router_ip": router_ip})
             .sort("timestamp", -1)
-            .limit(3)
+            .limit(5)
         )
 
         return render_template(
